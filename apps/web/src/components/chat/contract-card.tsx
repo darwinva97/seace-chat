@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Calendar, FileText, MapPin } from "lucide-react";
+import { Building2, Calendar, ExternalLink, FileText, MapPin } from "lucide-react";
 
 interface Contract {
   id: number;
@@ -110,17 +110,28 @@ export function ContractCard({
           {contract.inicioCotizacion} — {contract.finCotizacion}
         </div>
       </CardContent>
-      {onViewDetail && (
-        <CardFooter>
+      <CardFooter className="flex items-center justify-between gap-2">
+        {onViewDetail && (
           <button
             onClick={() => onViewDetail(contract.id)}
             className="text-xs text-primary hover:underline flex items-center gap-1"
           >
             <FileText className="size-3" />
-            Ver detalle completo
+            Ver detalle
           </button>
-        </CardFooter>
-      )}
+        )}
+        {contract.puedesCotizar && (
+          <a
+            href={`https://prod6.seace.gob.pe/s8uit-public/#/cotizacion/contrato/${contract.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors"
+          >
+            <ExternalLink className="size-3" />
+            Cotizar
+          </a>
+        )}
+      </CardFooter>
     </Card>
   );
 }

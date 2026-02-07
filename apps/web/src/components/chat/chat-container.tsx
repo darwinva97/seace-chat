@@ -22,11 +22,10 @@ export function ChatContainer() {
     });
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   function handleViewDetail(id: number) {
@@ -76,6 +75,7 @@ export function ChatContainer() {
               Pensando...
             </div>
           )}
+          <div ref={bottomRef} />
         </div>
       </ScrollArea>
 

@@ -10,11 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   Building2,
   Calendar,
-  Layers,
-  MapPin,
+  Clock,
   Package,
-  Users,
+  ExternalLink,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ContractDetailData {
   id: number;
@@ -51,100 +51,65 @@ export function ContractDetail({
 }: {
   detail: ContractDetailData;
 }) {
+  const cotizacionEtapa = detail.etapas.find(
+    (e) => e.nombre.toLowerCase().includes("cotiza")
+  );
+
   return (
-    <Card className="gap-4 py-4">
-      <CardHeader>
+    <Card className="gap-3 py-4">
+      <CardHeader className="pb-0">
         <div className="flex items-start justify-between gap-2">
-          <div>
-            <CardTitle className="text-base">{detail.numero}</CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
-              {detail.tipo} — {detail.tipoInvitacion}
-            </p>
-          </div>
+          <CardTitle className="text-base">{detail.numero}</CardTitle>
           <Badge>{detail.estado}</Badge>
         </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {detail.tipo} — {detail.tipoInvitacion}
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm">{detail.descripcion}</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-          <div className="flex items-start gap-2">
-            <Building2 className="size-4 mt-0.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Entidad</p>
-              <p className="font-medium">{detail.entidad}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Users className="size-4 mt-0.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Área Usuaria</p>
-              <p className="font-medium">{detail.areaUsuaria}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Calendar className="size-4 mt-0.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Publicación</p>
-              <p className="font-medium">{detail.fechaPublicacion}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Layers className="size-4 mt-0.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Año</p>
-              <p className="font-medium">{detail.anio}</p>
-            </div>
-          </div>
+        {/* Entidad */}
+        <div className="flex items-center gap-2 text-sm">
+          <Building2 className="size-4 text-muted-foreground shrink-0" />
+          <span className="font-medium">{detail.entidad}</span>
         </div>
 
-        {detail.etapas.length > 0 && (
-          <div>
-            <h4 className="text-sm font-semibold mb-2">Etapas</h4>
-            <div className="space-y-2">
-              {detail.etapas.map((etapa, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
-                >
-                  <span className="font-medium">{etapa.nombre}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {etapa.inicio} — {etapa.fin}
-                  </span>
-                </div>
-              ))}
+        {/* Vigencia de cotización */}
+        {cotizacionEtapa && (
+          <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-400 mb-1">
+              <Clock className="size-4" />
+              Vigencia de cotización
             </div>
+            <p className="text-sm">
+              {cotizacionEtapa.inicio} — {cotizacionEtapa.fin}
+            </p>
           </div>
         )}
 
+        {/* Items - lo esencial */}
         {detail.items.length > 0 && (
           <div>
-            <h4 className="text-sm font-semibold mb-2">Ítems</h4>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-1">
+              <Package className="size-4" />
+              Productos / Servicios requeridos
+            </h4>
             <div className="space-y-2">
               {detail.items.map((item, i) => (
-                <div key={i} className="rounded-lg border p-3 space-y-1">
+                <div key={i} className="rounded-lg border p-3">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-medium">{item.nombre}</p>
                     <Badge variant="outline" className="shrink-0">
                       {item.cantidad} {item.unidadMedida}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {item.descripcion}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="size-3" />
-                      {item.ubicacion}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Package className="size-3" />
-                      {item.codigo}
-                    </span>
-                  </div>
-                  {item.precioTotal && (
-                    <p className="text-sm font-semibold">
-                      S/ {item.precioTotal.toLocaleString()}
+                  {item.descripcion && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {item.descripcion}
+                    </p>
+                  )}
+                  {item.precioTotal != null && (
+                    <p className="text-sm font-semibold mt-1">
+                      S/ {item.precioTotal.toLocaleString("es-PE")}
                     </p>
                   )}
                 </div>
@@ -152,6 +117,18 @@ export function ContractDetail({
             </div>
           </div>
         )}
+
+        {/* Botón cotizar */}
+        <Button asChild className="w-full" size="lg">
+          <a
+            href={`https://prod6.seace.gob.pe/s8uit-public/#/cotizacion/contrato/${detail.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink className="size-4 mr-2" />
+            Ir a cotizar en SEACE
+          </a>
+        </Button>
       </CardContent>
     </Card>
   );
