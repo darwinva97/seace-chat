@@ -8,15 +8,16 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:push": "dotenvx run -f ../../.env -- drizzle-kit push",
+    "db:generate": "dotenvx run -f ../../.env -- drizzle-kit generate",
+    "db:migrate": "dotenvx run -f ../../.env -- drizzle-kit migrate"
   },
   "dependencies": {
     "drizzle-orm": "^0.39.0",
     "postgres": "^3.4.0"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.52.0",
     "drizzle-kit": "^0.30.0",
     "typescript": "^5.8.0"
   }
