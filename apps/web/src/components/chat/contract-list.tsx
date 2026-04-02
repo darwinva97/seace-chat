@@ -33,9 +33,16 @@ export function ContractList({
   return (
     <div className="space-y-3">
       {pagination && (
-        <div className="text-xs text-muted-foreground">
-          Mostrando {contracts.length} de {pagination.total.toLocaleString()}{" "}
-          resultados (página {pagination.page})
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-muted-foreground bg-slate-50 border border-slate-100 rounded-lg py-2 px-3">
+          <span>
+            Mostrando {contracts.length} de {pagination.total.toLocaleString()}{" "}
+            resultados (página {pagination.page})
+          </span>
+          {(pagination.page * pagination.pageSize) < pagination.total && (
+             <span className="font-medium text-slate-500 mt-1 sm:mt-0 italic">
+               (Pide al chat "Siguiente página" para continuar navegando)
+             </span>
+          )}
         </div>
       )}
       <div className="grid gap-3">

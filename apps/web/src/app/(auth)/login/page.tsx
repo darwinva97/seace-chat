@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
+import { signIn, signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +16,7 @@ import {
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [dni, setDni] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,23 +27,55 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await signIn.email({ email, password });
+    // 1. Validar primero con SEACE
+    try {
+      const seaceRes = await fetch("/api/seace-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: dni, password }),
+      });
 
-    if (error) {
-      setError(error.message ?? "Error al iniciar sesión");
+      const data = await seaceRes.json();
+
+      if (!seaceRes.ok) {
+        setError(data.error || "Credenciales inválidas en SEACE");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Usar los datos de SEACE (nombre real e email del JWT)
+      const virtualEmail = data.email || `${dni}@seace.gob.pe`;
+      const userName = data.name || dni;
+      
+      // Intentamos iniciar sesión localmente en Postgres
+      const signInResult = await signIn.email({ email: virtualEmail, password });
+
+      // Si no existía localmente, falla el login y lo REGISTRAMOS automáticamente
+      if (signInResult.error) {
+         console.log(`Registrando en BD local a: ${userName}`);
+         const signUpResult = await signUp.email({ name: userName, email: virtualEmail, password });
+         
+         if (signUpResult.error) {
+           setError(signUpResult.error.message ?? "Error guardando el perfil en base de datos");
+           setLoading(false);
+           return;
+         }
+      }
+
+      // 3. Todo OK, enviar al chat
+      router.push("/chat");
+    } catch (err) {
+      setError("No se pudo contactar con el sistema para validar.");
       setLoading(false);
-      return;
     }
-
-    router.push("/chat");
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">SEACE Chat</CardTitle>
-          <CardDescription>Inicia sesión para continuar</CardDescription>
+          <CardTitle className="text-2xl">Acceso a SEACE</CardTitle>
+          <CardDescription>Usa tu usuario y clave del RNP / SEACE</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,16 +85,17 @@ export default function LoginPage() {
               </div>
             )}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
+              <label htmlFor="dni" className="text-sm font-medium">
+                DNI / RUC
               </label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
+                id="dni"
+                type="text"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                placeholder="Ingresa tu DNI o RUC"
                 required
+                maxLength={11}
               />
             </div>
             <div className="space-y-2">
@@ -86,11 +118,8 @@ export default function LoginPage() {
           </form>
         </CardContent>
         <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              Regístrate
-            </Link>
+          <p className="text-xs text-muted-foreground text-center">
+            Esta aplicación se integrará con el portal oficial del OSCE para la validación segura de proveedores.
           </p>
         </CardFooter>
       </Card>

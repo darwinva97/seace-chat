@@ -4,7 +4,7 @@ import type { Message } from "ai";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bot, User } from "lucide-react";
 import { ContractList } from "./contract-list";
-import { ContractDetail } from "./contract-detail";
+import { ContractCard } from "./contract-card";
 import ReactMarkdown from "react-markdown";
 
 function ToolResult({
@@ -16,37 +16,72 @@ function ToolResult({
   result: unknown;
   onViewDetail?: (id: number) => void;
 }) {
-  if (toolName === "searchContracts" && result && typeof result === "object") {
-    const data = result as {
-      contracts: Array<{
-        id: number;
-        numero: string;
-        tipo: string;
-        descripcion: string;
-        entidad: string;
-        estado: string;
-        fechaPublicacion: string;
-        inicioCotizacion: string;
-        finCotizacion: string;
-        puedesCotizar: boolean;
-      }>;
-      pagination: { page: number; pageSize: number; total: number };
-    };
+  if ((toolName === "searchContracts" || toolName === "listSavedDrafts") && result && typeof result === "object") {
+    const data = result as any;
+    const rawContracts = data.contracts || data.data || [];
+    
+    // Mapear los contratos para que tengan la estructura que espera ContractCard
+    const mappedContracts = rawContracts.map((c: any) => ({
+        id: c.id || c.idContrato,
+        // Ser extremadamente exhaustivos buscando el ID de cotización
+        idCotizacion: c.idCotizacion || c.id_cotizacion || c.codCotizacion || (c.idEstadoCotiza === 1 ? c.idCotizacion : null),
+        numero: c.numero || c.desContratacion || c.nroContratacion || "N/A",
+        tipo: c.tipo || c.nomObjetoContrato || "Servicio",
+        descripcion: c.descripcion || c.desObjetoContrato || "",
+        entidad: c.entidad || c.nomEntidad || "",
+        estado: c.estado || c.nomEstadoContrato || "Vigente",
+        fechaPublicacion: c.fechaPublicacion || c.fecPublica || "",
+        inicioCotizacion: c.inicioCotizacion || c.fecIniCotizacion || "",
+        finCotizacion: c.finCotizacion || c.fecFinCotizacion || "",
+        puedesCotizar: c.puedesCotizar ?? c.cotizar ?? false,
+        nomSigla: c.nomSigla,
+        nomTipoCotizacion: c.nomTipoCotizacion
+    }))
+    // Ordenar: 1. Puedes Cotizar activamente (verde). 2. Borradores Guardados (azul). 3. Resto.
+    .sort((a: any, b: any) => {
+        const canQuoteA = a.puedesCotizar && !a.idCotizacion && !(a as any).id_cotizacion;
+        const canQuoteB = b.puedesCotizar && !b.idCotizacion && !(b as any).id_cotizacion;
+
+        if (canQuoteA && !canQuoteB) return -1;
+        if (!canQuoteA && canQuoteB) return 1;
+
+        const hasDraftA = !!(a.idCotizacion || (a as any).id_cotizacion);
+        const hasDraftB = !!(b.idCotizacion || (b as any).id_cotizacion);
+
+        if (hasDraftA && !hasDraftB) return -1;
+        if (!hasDraftA && hasDraftB) return 1;
+
+        return 0;
+    });
+
     return (
       <ContractList
-        contracts={data.contracts}
-        pagination={data.pagination}
+        contracts={mappedContracts}
+        pagination={data.pagination || data.pageable || { page: 1, pageSize: rawContracts.length, total: rawContracts.length }}
         onViewDetail={onViewDetail}
       />
     );
   }
 
-  if (
-    toolName === "getContractDetail" &&
-    result &&
-    typeof result === "object"
-  ) {
-    return <ContractDetail detail={result as never} />;
+  if (toolName === "getContractDetail" && result && typeof result === "object") {
+    const detail = result as any;
+    // Mapear el detalle completo a la interfaz de ContractCard para uniformizar
+    const contract = {
+      id: detail.id || (detail.contrato && detail.contrato.idContrato),
+      idCotizacion: detail.idCotizacion || (detail.contrato && detail.contrato.idCotizacion),
+      numero: detail.numero || (detail.contrato && detail.contrato.nroDescripcion) || detail.nroContratacion || "N/A",
+      tipo: detail.tipo || (detail.contrato && detail.contrato.nomObjetoContrato) || detail.nomObjetoContrato || "Servicio",
+      descripcion: detail.descripcion || (detail.contrato && detail.contrato.desObjetoContrato) || detail.desObjetoContrato || "",
+      entidad: detail.entidad || (detail.contrato && detail.contrato.nomEntidad) || detail.nomEntidad || "",
+      estado: detail.estado || (detail.contrato && detail.contrato.nomEstadoContrato) || detail.nomEstadoContrato || "Vigente",
+      fechaPublicacion: detail.fechaPublicacion || (detail.contrato && detail.contrato.fecPublica) || detail.fecPublica || "",
+      inicioCotizacion: detail.inicioCotizacion || (detail.contrato && detail.contrato.fecIniCotizacion) || detail.fecIniCotizacion || "",
+      finCotizacion: detail.finCotizacion || (detail.contrato && detail.contrato.fecFinCotizacion) || detail.fecFinCotizacion || "",
+      puedesCotizar: detail.puedesCotizar ?? (detail.contrato && detail.contrato.ingresarInvProveedor === 1) ?? detail.cotizar ?? false,
+      nomSigla: detail.nomSigla || (detail.contrato && detail.contrato.nomSigla),
+      nomTipoCotizacion: detail.nomTipoCotizacion || (detail.contrato && detail.contrato.nomTipoCotizacion),
+    };
+    return <ContractCard contract={contract as any} onViewDetail={onViewDetail} />;
   }
 
   if (

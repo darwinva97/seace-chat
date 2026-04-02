@@ -118,17 +118,7 @@ export function ContractDetail({
           </div>
         )}
 
-        {/* Botón cotizar */}
-        <Button asChild className="w-full" size="lg">
-          <a
-            href={`https://prod6.seace.gob.pe/s8uit-public/#/cotizacion/contrato/${detail.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ExternalLink className="size-4 mr-2" />
-            Ir a cotizar en SEACE
-          </a>
-        </Button>
+        {/* Eliminado redireccionamiento externo a SEACE por solicitud del usuario */}
       </CardContent>
     </Card>
   );

@@ -31,7 +31,7 @@ export async function searchContracts(
   searchParams.set("anio", String(params.anio ?? currentYear));
   searchParams.set("orden", String(params.orden ?? 2));
   searchParams.set("page", String(params.page ?? 1));
-  searchParams.set("page_size", String(params.page_size ?? 10));
+  searchParams.set("page_size", String(params.page_size ?? 20));
 
   if (params.palabra_clave) {
     searchParams.set("palabra_clave", params.palabra_clave);
@@ -46,9 +46,13 @@ export async function searchContracts(
     searchParams.set("departamento", String(params.departamento));
   }
 
-  return fetchSeace<SeaceSearchResponse>(
-    `/contrataciones/buscador?${searchParams.toString()}`
-  );
+  const fullPath = `/contrataciones/buscador?${searchParams.toString()}`;
+  console.log("=== [AI SEACE SEARCH] REQUEST URL ===", fullPath);
+
+  const response = await fetchSeace<SeaceSearchResponse>(fullPath);
+  console.log("=== [AI SEACE SEARCH] RAW RESPONSE ===", JSON.stringify(response.data, null, 2));
+
+  return response;
 }
 
 export async function getContractDetail(

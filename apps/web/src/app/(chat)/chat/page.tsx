@@ -3,7 +3,7 @@ import { UserButton } from "@/components/auth/user-button";
 
 export default function ChatPage() {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-dvh">
       <header className="flex items-center justify-between border-b px-4 h-16 shrink-0">
         <div className="flex items-center gap-2">
           <h1 className="font-semibold text-lg">SEACE Chat</h1>
