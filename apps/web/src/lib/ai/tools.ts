@@ -25,7 +25,7 @@ export const seaceTools = {
             tipo: "Servicio",
             descripcion: d.descripcion,
             entidad: d.entidad,
-            estado: d.estado || "BORRADOR",
+            estado: d.estado == "BORRADOR",
             fechaPublicacion: "",
           })),
         };

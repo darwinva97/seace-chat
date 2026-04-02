@@ -38,9 +38,9 @@ export function ChatContainer() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-[calc(100dvh-4rem)]">
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="max-w-3xl mx-auto space-y-4 pb-4">
+        <div className="max-w-5xl mx-auto w-full px-2 sm:px-4 space-y-4 pb-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
               <div className="text-center space-y-2">
@@ -84,7 +84,7 @@ export function ChatContainer() {
       <div className="border-t bg-background p-4">
         <form
           onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto flex items-center gap-2"
+          className="max-w-5xl mx-auto w-full flex items-center gap-2"
         >
           {messages.length > 0 && (
             <Button
@@ -97,11 +97,11 @@ export function ChatContainer() {
               <Trash2 className="size-4" />
             </Button>
           )}
-          <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
+          <div className="flex-1 flex flex-row items-center gap-2">
             <button
               type="button"
               onClick={() => setOnlyQuoteable(!onlyQuoteable)}
-              className={`px-3 py-2.5 rounded-xl border flex items-center gap-2 whitespace-nowrap text-xs font-bold transition-all shadow-sm ${
+              className={`px-3 py-2.5 rounded-xl border flex items-center gap-2 whitespace-nowrap text-[10px] sm:text-xs font-bold transition-all shadow-sm ${
                 onlyQuoteable 
                   ? "bg-green-600 border-green-700 text-white shadow-green-100/50" 
                   : "bg-white border-slate-200 text-slate-500 hover:border-green-300 hover:text-green-600"

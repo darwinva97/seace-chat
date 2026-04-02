@@ -408,7 +408,7 @@ export async function POST(req: Request) {
           numero: body.numeroContrato || "",
           entidad: body.entidadContrato || "",
           descripcion: body.descripcion || "",
-          estado: body.modo === "enviar" ? "POR_ENVIAR" : "BORRADOR",
+          estado: body.modo === "enviar" ? "POR_ENVIAR" : "BORRADOR2",
           itemsCotizacion: body.itemsCotizacion || [],
           rtmList: body.rtmList || [],
           vigenciaCotizacion: body.vigenciaCotizacion || null,

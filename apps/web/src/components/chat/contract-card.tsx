@@ -57,7 +57,7 @@ export function ContractCard({
   const [isOpen, setIsOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { data: session } = useSession();
-  
+
   // Estado local para cuando el modal guarda un borrador en esta sesión o se detecta asíncronamente
   const [localDraftSaved, setLocalDraftSaved] = useState(false);
 
@@ -76,7 +76,7 @@ export function ContractCard({
           setLocalDraftSaved(true);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [contract.id, hasDraft, userId, localDraftSaved]);
 
 
@@ -98,11 +98,11 @@ export function ContractCard({
               <Badge variant={getEstadoVariant(contract.estado)}>
                 {contract.estado}
               </Badge>
-              {hasDraft && (
+              {/* {hasDraft && (
                 <Badge variant="outline" className="border-blue-300 text-blue-600 bg-blue-50 gap-1 flex items-center">
                   <Save className="size-3" /> Borrador Guardado
                 </Badge>
-              )}
+              )} */}
             </div>
           </div>
         </CardHeader>
@@ -118,16 +118,16 @@ export function ContractCard({
               {contract.fechaPublicacion}
             </span>
             {(contract as any).nomTipoCotizacion && (
-               <span className="flex items-center gap-1.5 bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md">
-                 <FileText className="size-3" />
-                 {(contract as any).nomTipoCotizacion}
-               </span>
+              <span className="flex items-center gap-1.5 bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md">
+                <FileText className="size-3" />
+                {(contract as any).nomTipoCotizacion}
+              </span>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-2 border-t pt-3 mt-3">
-          <button 
-            onClick={() => setIsDetailOpen(true)} 
+          <button
+            onClick={() => setIsDetailOpen(true)}
             className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded px-2.5 py-1.5 hover:bg-blue-100 flex items-center gap-1.5 transition-colors font-medium shadow-sm"
           >
             <Info className="size-3.5" /> Ver detalle técnico
@@ -186,7 +186,7 @@ function DocCard({ doc, index, contractId }: { doc: any; index: number; contract
   const ext = fileName.split(".").pop()?.toLowerCase() || "";
 
   // URL del formato original en SEACE (vía nuestro proxy)
-  const formatUrl = idArchivo 
+  const formatUrl = idArchivo
     ? `/api/seace-contract?action=download-file&id_archivo=${idArchivo}&id_contrato=${contractId}`
     : doc.urlArchivo || doc.rutaArchivo || "";
 
@@ -253,7 +253,7 @@ function DocCard({ doc, index, contractId }: { doc: any; index: number; contract
         {uploadedFile && (
           <div className="mt-3 flex items-center gap-3 bg-white border border-green-200 rounded-lg px-3 py-2 shadow-sm">
             <div className="size-8 rounded bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
-               <FileText className="size-4" />
+              <FileText className="size-4" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-green-800 truncate">{uploadedFile.name}</p>
@@ -448,7 +448,7 @@ function CotizacionModal({
               });
               setRtmValues(rtmV);
             }
-          } 
+          }
           // 2. FALLBACK: Si no hay local, buscar si SEACE ya tiene info (del listar-completo)
           else {
             const prices: Record<string | number, number> = {};
@@ -578,7 +578,7 @@ function CotizacionModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-xl w-full max-w-5xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
         {/* ── Header ── */}
-        <div className="px-5 py-3 border-b flex justify-between items-center bg-amber-50">
+        <div className="px-4 sm:px-5 py-2 sm:py-3 border-b flex justify-between items-center bg-amber-50">
           <div>
             <h2 className="text-base font-bold text-amber-900">
               Registro de la cotización
@@ -641,12 +641,12 @@ function CotizacionModal({
                 <h3 className="text-sm font-bold mb-3">
                   Documentos solicitados a presentar por el proveedor
                 </h3>
-                  <div className="space-y-3">
-                    {/* Documentos dinámicos de SEACE */}
-                    {docs.map((doc: any, i: number) => (
-                      <DocCard key={i} doc={doc} index={i} contractId={contract.id} />
-                    ))}
-                  </div>
+                <div className="space-y-3">
+                  {/* Documentos dinámicos de SEACE */}
+                  {docs.map((doc: any, i: number) => (
+                    <DocCard key={i} doc={doc} index={i} contractId={contract.id} />
+                  ))}
+                </div>
               </section>
 
               {/* ─── 2. REGISTRO DE ÍTEMS ─── */}
