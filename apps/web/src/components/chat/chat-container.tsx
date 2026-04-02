@@ -1,8 +1,8 @@
 "use client";
 
 import { useChat } from "ai/react";
-import { useRef, useEffect } from "react";
-import { Send, Loader2, Trash2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Send, Loader2, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./message-bubble";
@@ -15,11 +15,13 @@ const SUGGESTIONS = [
 ];
 
 export function ChatContainer() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages, append } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages, append, setInput } =
     useChat({
       api: "/api/chat",
       maxSteps: 5,
     });
+  
+  const [onlyQuoteable, setOnlyQuoteable] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -95,26 +97,55 @@ export function ChatContainer() {
               <Trash2 className="size-4" />
             </Button>
           )}
-          <div className="relative flex-1">
-            <input
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Busca contrataciones, por ejemplo: 'servicios en Lima'..."
-              className="w-full rounded-xl border bg-background px-4 py-3 pr-12 text-sm outline-none focus:ring-2 focus:ring-ring"
-              disabled={isLoading}
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={isLoading || !input.trim()}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-lg"
+          <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setOnlyQuoteable(!onlyQuoteable)}
+              className={`px-3 py-2.5 rounded-xl border flex items-center gap-2 whitespace-nowrap text-xs font-bold transition-all shadow-sm ${
+                onlyQuoteable 
+                  ? "bg-green-600 border-green-700 text-white shadow-green-100/50" 
+                  : "bg-white border-slate-200 text-slate-500 hover:border-green-300 hover:text-green-600"
+              }`}
+              title="Solo contrataciones vigentes y cotizables"
             >
-              {isLoading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Send className="size-4" />
-              )}
-            </Button>
+              <CheckCircle2 className={`size-4 ${onlyQuoteable ? "text-white" : "text-slate-300"}`} />
+              Solo Cotizables
+            </button>
+            <div className="relative flex-1 w-full">
+              <input
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && onlyQuoteable && input.trim() && !input.toLowerCase().includes("cotiza")) {
+                    e.preventDefault();
+                    append({ role: "user", content: `${input} (Deben ser contrataciones vigentes y aptas para cotizar)` });
+                    setInput("");
+                  }
+                }}
+                placeholder="Busca contrataciones, por ejemplo: 'servicios en Lima'..."
+                className="w-full rounded-xl border bg-background px-4 py-3 pr-12 text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !input.trim()}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 size-8 rounded-lg"
+                onClick={(e) => {
+                  if (onlyQuoteable && input.trim() && !input.toLowerCase().includes("cotiza")) {
+                    e.preventDefault();
+                    append({ role: "user", content: `${input} (Deben ser contrataciones vigentes y aptas para cotizar)` });
+                    setInput("");
+                  }
+                }}
+              >
+                {isLoading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Send className="size-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

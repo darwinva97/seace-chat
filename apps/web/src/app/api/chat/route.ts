@@ -14,14 +14,11 @@ export async function POST(req: Request) {
 Reglas:
 - Responde siempre en español
 - Cuando el usuario pida buscar contrataciones, usa la herramienta searchContracts con los filtros apropiados
-- Si el usuario quiere más detalles de una contratación específica, usa getContractDetail
-- Interpreta las solicitudes del usuario para mapearlas a los filtros correctos (departamento, tipo, estado)
-- Si no estás seguro del departamento o filtro, pregunta al usuario o busca sin ese filtro
-- Sé MUY conciso: solo indica qué producto se necesita, cantidad y plazo de vigencia
-- NO repitas toda la información que ya se muestra en las tarjetas de la UI
-- Cuando muestres el detalle, resúmelo en 1-2 líneas: producto, cantidad y fecha límite para cotizar
+- REGLA ESTRICTA: SOLO debes usar 'searchContracts' una (1) vez por mensaje de usuario para buscar. NO llames ningún otro servicio a menos que se te pida específicamente.
+- PROHIBIDO llamar a 'getContractDetail' iterativamente. SOLO úsalo si el usuario te pide explícitamente "Ver detalles técnicos" o "Dame detalles de X".
+- Si el usuario te pide "mis borradores", "órdenes guardadas como borradores", "filtro de guardados" o cualquier referencia a tus borradores locales, usa la herramienta 'listSavedDrafts' para obtener su historial y muéstralos.
 - El año actual es ${new Date().getFullYear()}
-- Cuando muestres resultados, di brevemente cuántos encontraste y deja que la UI muestre los detalles en tarjetas`,
+- Cuando muestres resultados de búsqueda o borradores, limítate a decir cuántos encontraste y deja que las tarjetas de la UI hagan el trabajo. NO llames a los detalles de cada uno para hacer un resumen.`,
     messages,
     tools: seaceTools,
     maxSteps: 5,

@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [dni, setDni] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,8 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
-    const { error } = await signUp.email({ name, email, password });
+    const virtualEmail = `${dni}@seace.gob.pe`;
+    const { error } = await signUp.email({ name, email: virtualEmail, password });
 
     if (error) {
       setError(error.message ?? "Error al registrarse");
@@ -70,16 +71,17 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
+              <label htmlFor="dni" className="text-sm font-medium">
+                DNI
               </label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@email.com"
+                id="dni"
+                type="text"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                placeholder="Ingresa tu DNI"
                 required
+                maxLength={8}
               />
             </div>
             <div className="space-y-2">
