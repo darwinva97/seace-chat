@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1775869771355,
+      "tag": "0000_soft_clea",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775869900000,
+      "tag": "0001_payload_seace_legacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776000000000,
+      "tag": "0002_platform_security_and_usage",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776003600000,
+      "tag": "0003_guest_ai_quota",
+      "breakpoints": true
+    }
+  ]
+}
